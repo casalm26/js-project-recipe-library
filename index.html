@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Library</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Recipe Library</h1>
+        
+        <div class="filters">
+            <div class="filter-section">
+                <select class="filter-select" data-filter-type="dietary">
+                    <option value="all">All Diets</option>
+                    <option value="vegan">Vegan</option>
+                    <option value="vegetarian">Vegetarian</option>
+                    <option value="gluten-free">Gluten-free</option>
+                    <option value="dairy-free">Dairy-free</option>
+                </select>
+            </div>
+
+            <div class="filter-section">
+                <select class="filter-select" data-filter-type="cuisine">
+                    <option value="all">All Cuisines</option>
+                    <option value="mediterranean">Mediterranean</option>
+                    <option value="middle-eastern">Middle Eastern</option>
+                    <option value="asian">Asian</option>
+                    <option value="italian">Italian</option>
+                    <option value="mexican">Mexican</option>
+                </select>
+            </div>
+
+            <div class="filter-section">
+                <select class="filter-select" data-filter-type="time">
+                    <option value="all">All Times</option>
+                    <option value="15">Under 15 min</option>
+                    <option value="30">15-30 min</option>
+                    <option value="60">30-60 min</option>
+                    <option value="61">Over 60 min</option>
+                </select>
+            </div>
+
+            <div class="filter-section">
+                <select class="filter-select" data-filter-type="ingredients">
+                    <option value="all">All Ingredients</option>
+                    <option value="5">Under 5 ingredients</option>
+                    <option value="10">6-10 ingredients</option>
+                    <option value="15">11-15 ingredients</option>
+                    <option value="16">Over 16 ingredients</option>
+                </select>
+            </div>
+
+            <div class="sort-section">
+                <select class="sort-select" data-sort="sort">
+                    <option value="time">Sort by Time</option>
+                    <option value="popularity">Sort by Popularity</option>
+                    <option value="price">Sort by Price</option>
+                    <option value="ingredients">Sort by Ingredients</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="recipes-grid" id="recipesContainer">
+            <!-- Recipes will be inserted here by JavaScript -->
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
