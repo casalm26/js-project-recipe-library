@@ -189,12 +189,14 @@ h1 {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
 }
 
 .recipe-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #0018A4;
 }
 
 .recipe-image {
@@ -286,7 +288,7 @@ h1 {
 }
 
 .sort-section .select-button:hover {
-    border-color: #FF6589;
+    border-color: #0018A4;
 }
 
 .arrow {
@@ -395,6 +397,13 @@ h1 {
 
 .filter-message:last-child {
     margin-bottom: 0;
+}
+
+/* Update message card to not have hover effects */
+.message-card:hover {
+    transform: none;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Ensure the recipe cards have consistent styling */
