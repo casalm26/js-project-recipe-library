@@ -231,11 +231,18 @@ customSelects.forEach(select => {
                     .filter(cb => cb.checked)
                     .map(cb => cb.parentElement.textContent.trim());
 
+                // Add or remove active class based on selection
+                if (selectedItems.length > 0) {
+                    select.classList.add('has-active-filters');
+                } else {
+                    select.classList.remove('has-active-filters');
+                }
+
                 const defaultText = {
                     dietary: 'Dietary Preferences',
                     cuisine: 'Cuisines',
                     time: 'Cooking Time',
-                    ingredients: 'Number of Ingredients'
+                    ingredients: 'No. of Ingredients'
                 }[filterType];
 
                 selectedValue.textContent = selectedItems.length > 0 

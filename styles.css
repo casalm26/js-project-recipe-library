@@ -246,12 +246,13 @@ h1 {
     width: 100%;
 }
 
+/* Update select button styling */
 .select-button {
     width: 100%;
     padding: 1rem;
     border: 2px solid #CCFFE2;
     border-radius: 8px;
-    background-color: white;
+    background-color: #CCFFE2;  /* Default green background */
     font-size: 1rem;
     cursor: pointer;
     color: #333;
@@ -259,6 +260,33 @@ h1 {
     justify-content: space-between;
     align-items: center;
     height: 56px;
+    transition: all 0.2s ease;
+}
+
+/* Hover state */
+.select-button:hover {
+    border-color: #0018A4;
+}
+
+/* Active filter state */
+.custom-select.has-active-filters .select-button {
+    background-color: #0018A4;
+    border-color: #0018A4;
+    color: white;
+}
+
+.custom-select.has-active-filters .arrow {
+    border-color: white;
+}
+
+/* Keep sort button styling separate */
+.sort-section .select-button {
+    background-color: #FFECEA;
+    border-color: #FFECEA;
+}
+
+.sort-section .select-button:hover {
+    border-color: #FF6589;
 }
 
 .arrow {
@@ -307,11 +335,6 @@ h1 {
 
 .select-dropdown li:hover {
     background-color: #f5f5f5;
-}
-
-/* Sort select specific styling */
-.sort-section .select-button {
-    border-color: #FFECEA;
 }
 
 /* Mobile optimizations */
