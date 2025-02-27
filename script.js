@@ -3,13 +3,13 @@ const recipes = [
     {
         id: 1,
         title: "Placeholder Recipe",
-        cuisine: "American",
+        cuisine: "Mexican", 
         time: 90,
         image: "path_to_recipe_image.jpg",
         ingredients: [
             "6 bone-in chicken breast halves",
             "1/2 teaspoon coarse salt",
-            "1/2 teaspoon Mrs. Dash seasoning",
+            "1/2 teaspoon Mrs. Dash seasoning", 
             "1/4 teaspoon black pepper"
         ],
         dietary: ["dairy-free", "gluten-free"],
@@ -58,7 +58,7 @@ let currentSort = 'time';
 let filterMessages = [];
 
 // Render recipes
-function renderRecipes(recipesToRender) {
+const renderRecipes = (recipesToRender) => {
     recipesContainer.innerHTML = '';
     
     // Create and append the message card
@@ -98,10 +98,10 @@ function renderRecipes(recipesToRender) {
         `;
         recipesContainer.appendChild(recipeCard);
     });
-}
+};
 
 // Filter recipes
-function filterRecipes() {
+const filterRecipes = () => {
     let filteredRecipes = recipes;
 
     // Apply dietary filters
@@ -122,31 +122,31 @@ function filterRecipes() {
 
     // Apply time filters
     if (currentFilters.time.length > 0) {
-        filteredRecipes = filteredRecipes.filter(recipe => {
-            return currentFilters.time.some(timeLimit => {
+        filteredRecipes = filteredRecipes.filter(recipe => 
+            currentFilters.time.some(timeLimit => {
                 const limit = parseInt(timeLimit);
                 if (limit === 61) return recipe.time > 60;
                 return recipe.time <= limit;
-            });
-        });
+            })
+        );
     }
 
     // Apply ingredients filters
     if (currentFilters.ingredients.length > 0) {
-        filteredRecipes = filteredRecipes.filter(recipe => {
-            return currentFilters.ingredients.some(ingredientLimit => {
+        filteredRecipes = filteredRecipes.filter(recipe => 
+            currentFilters.ingredients.some(ingredientLimit => {
                 const limit = parseInt(ingredientLimit);
                 if (limit === 16) return recipe.ingredientCount >= 16;
                 return recipe.ingredientCount <= limit;
-            });
-        });
+            })
+        );
     }
 
     sortRecipes(filteredRecipes);
-}
+};
 
 // Sort recipes
-function sortRecipes(recipesToSort) {
+const sortRecipes = (recipesToSort) => {
     const sortedRecipes = [...recipesToSort].sort((a, b) => {
         switch (currentSort) {
             case 'time':
@@ -163,15 +163,15 @@ function sortRecipes(recipesToSort) {
     });
     
     renderRecipes(sortedRecipes);
-}
+};
 
 // Add function to create messages for filter changes
-function addFilterMessage(filterType, selectedItems) {
+const addFilterMessage = (filterType, selectedItems) => {
     let message = '';
     const timestamp = new Date().toLocaleTimeString();
     
     if (filterType === 'sort') {
-        message = `[${timestamp}] Sorted by: ${selectedItems}`;
+        message = `Sorted by: ${selectedItems}`;
     } else {
         const filterNames = {
             dietary: 'dietary preferences',
@@ -181,9 +181,9 @@ function addFilterMessage(filterType, selectedItems) {
         };
         
         if (selectedItems.length === 0) {
-            message = `[${timestamp}] Cleared ${filterNames[filterType]} filter`;
+            message = `Cleared ${filterNames[filterType]} filter`;
         } else {
-            message = `[${timestamp}] Selected ${filterNames[filterType]}: ${selectedItems.join(', ')}`;
+            message = `Selected ${filterNames[filterType]}: ${selectedItems.join(', ')}`;
         }
     }
     
@@ -192,7 +192,7 @@ function addFilterMessage(filterType, selectedItems) {
         filterMessages.pop();
     }
     filterRecipes(); // Ensure the display updates
-}
+};
 
 // Handle custom select functionality
 customSelects.forEach(select => {
@@ -273,4 +273,4 @@ document.addEventListener('click', () => {
 });
 
 // Initial render
-filterRecipes(); 
+filterRecipes();
