@@ -12,53 +12,147 @@
         
         <div class="filters">
             <div class="filter-section">
-                <select class="filter-select" data-filter-type="dietary">
-                    <option value="all">All Diets</option>
-                    <option value="vegan">Vegan</option>
-                    <option value="vegetarian">Vegetarian</option>
-                    <option value="gluten-free">Gluten-free</option>
-                    <option value="dairy-free">Dairy-free</option>
-                </select>
+                <div class="custom-select" data-filter-type="dietary">
+                    <button class="select-button">
+                        <span class="selected-value">Dietary Preferences</span>
+                        <span class="arrow"></span>
+                    </button>
+                    <ul class="select-dropdown">
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="vegan"> Vegan
+                            </label>
+                        </li>
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="vegetarian"> Vegetarian
+                            </label>
+                        </li>
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="gluten-free"> Gluten-free
+                            </label>
+                        </li>
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="dairy-free"> Dairy-free
+                            </label>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div class="filter-section">
-                <select class="filter-select" data-filter-type="cuisine">
-                    <option value="all">All Cuisines</option>
-                    <option value="mediterranean">Mediterranean</option>
-                    <option value="middle-eastern">Middle Eastern</option>
-                    <option value="asian">Asian</option>
-                    <option value="italian">Italian</option>
-                    <option value="mexican">Mexican</option>
-                </select>
+                <div class="custom-select" data-filter-type="cuisine">
+                    <button class="select-button">
+                        <span class="selected-value">Cuisines</span>
+                        <span class="arrow"></span>
+                    </button>
+                    <ul class="select-dropdown">
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="mediterranean"> Mediterranean
+                            </label>
+                        </li>
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="middle-eastern"> Middle Eastern
+                            </label>
+                        </li>
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="asian"> Asian
+                            </label>
+                        </li>
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="italian"> Italian
+                            </label>
+                        </li>
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="mexican"> Mexican
+                            </label>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div class="filter-section">
-                <select class="filter-select" data-filter-type="time">
-                    <option value="all">All Times</option>
-                    <option value="15">Under 15 min</option>
-                    <option value="30">15-30 min</option>
-                    <option value="60">30-60 min</option>
-                    <option value="61">Over 60 min</option>
-                </select>
+                <div class="custom-select" data-filter-type="time">
+                    <button class="select-button">
+                        <span class="selected-value">Cooking Time</span>
+                        <span class="arrow"></span>
+                    </button>
+                    <ul class="select-dropdown">
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="15"> Under 15 min
+                            </label>
+                        </li>
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="30"> 15-30 min
+                            </label>
+                        </li>
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="60"> 30-60 min
+                            </label>
+                        </li>
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="61"> Over 60 min
+                            </label>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div class="filter-section">
-                <select class="filter-select" data-filter-type="ingredients">
-                    <option value="all">All Ingredients</option>
-                    <option value="5">Under 5 ingredients</option>
-                    <option value="10">6-10 ingredients</option>
-                    <option value="15">11-15 ingredients</option>
-                    <option value="16">Over 16 ingredients</option>
-                </select>
+                <div class="custom-select" data-filter-type="ingredients">
+                    <button class="select-button">
+                        <span class="selected-value">No. of Ingredients</span>
+                        <span class="arrow"></span>
+                    </button>
+                    <ul class="select-dropdown">
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="5"> Under 5 ingredients
+                            </label>
+                        </li>
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="10"> 6-10 ingredients
+                            </label>
+                        </li>
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="15"> 11-15 ingredients
+                            </label>
+                        </li>
+                        <li>
+                            <label class="checkbox-label">
+                                <input type="checkbox" data-value="16"> Over 16 ingredients
+                            </label>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div class="sort-section">
-                <select class="sort-select" data-sort="sort">
-                    <option value="time">Sort by Time</option>
-                    <option value="popularity">Sort by Popularity</option>
-                    <option value="price">Sort by Price</option>
-                    <option value="ingredients">Sort by Ingredients</option>
-                </select>
+                <div class="custom-select" data-filter-type="sort">
+                    <button class="select-button">
+                        <span class="selected-value">Sort by Time</span>
+                        <span class="arrow"></span>
+                    </button>
+                    <ul class="select-dropdown">
+                        <li data-value="time">Sort by Time</li>
+                        <li data-value="popularity">Sort by Popularity</li>
+                        <li data-value="price">Sort by Price</li>
+                        <li data-value="ingredients">Sort by Ingredients</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
