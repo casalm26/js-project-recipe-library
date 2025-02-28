@@ -77,6 +77,45 @@ const renderRecipes = (recipesToRender) => {
     `;
     recipesContainer.appendChild(messageCard);
     
+    // Add no results message if no recipes match filters
+    if (recipesToRender.length === 0) {
+        const noResultsCard = document.createElement('div');
+        noResultsCard.className = 'recipe-card no-results-card';
+        noResultsCard.innerHTML = `
+            <div class="recipe-content">
+                <div class="no-results-content">
+                    <svg class="no-results-icon" viewBox="0 0 24 24" width="48" height="48">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    <h3>No recipes found ${Object.entries(currentFilters)
+                        .filter(([filter, values]) => values.length > 0)
+                        .map(([filter, values]) => {
+                            if (filter === 'dietary' && values.length) {
+                                return `that are ${values.join(' and ')}`;
+                            } else if (filter === 'cuisine' && values.length) {
+                                return `from ${values.join(' or ')} cuisine`;
+                            } else if (filter === 'time' && values.length) {
+                                return `with a cooking time of ${values.join(' or ')} mins`;
+                            } else if (filter === 'ingredients' && values.length) {
+                                return `with ${values.join(' or ')} ingredients`;
+                            } else {
+                                return '';
+                            }
+                        })
+                        .filter(text => text)
+                        .reduce((acc, text, i, arr) => {
+                            if (i === 0) return text;
+                            if (i === arr.length - 1) return `${acc} and ${text}`;
+                            return `${acc}, ${text}`;
+                        }, '')}.</h3>
+                    <p>Try adjusting your filters to find more recipes</p>
+                </div>
+            </div>
+        `;
+        recipesContainer.appendChild(noResultsCard);
+        return;
+    }
+    
     // Render recipe cards
     recipesToRender.forEach(recipe => {
         const recipeCard = document.createElement('div');
