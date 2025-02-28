@@ -1,3 +1,4 @@
+/* Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -15,12 +16,14 @@ body {
     margin: 0 auto;
 }
 
+/* Typography */
 h1 {
     color: #0018A4;
     margin-bottom: 2rem;
     font-size: 2.5rem;
 }
 
+/* Filter Section */
 .filters {
     margin-bottom: 2rem;
     display: flex;
@@ -32,157 +35,151 @@ h1 {
     flex-wrap: wrap;
 }
 
-.filter-section, .sort-section {
+.filter-section, 
+.sort-section {
     flex: 1;
     min-width: 200px;
 }
 
-/* Improved select styling */
-.filter-select, .sort-select {
+/* Custom Select Styles */
+.custom-select {
+    position: relative;
     width: 100%;
-    padding: 1rem 2.5rem 1rem 1rem; /* Increased padding, especially right padding for arrow */
+}
+
+.select-button {
+    width: 100%;
+    padding: 1rem;
     border: 2px solid #CCFFE2;
     border-radius: 8px;
-    background-color: white;
+    background-color: #CCFFE2;
     font-size: 1rem;
     cursor: pointer;
     color: #333;
-    /* Improved arrow positioning */
-    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23333333' stroke-width='2'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 12px;
-    /* Remove default arrow */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    height: 56px; /* Fixed height for better touch targets */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 56px;
+    transition: all 0.2s ease;
 }
 
-/* Remove default arrow in IE */
-.filter-select::-ms-expand, 
-.sort-select::-ms-expand {
-    display: none;
-}
-
-/* Hover and focus states */
-.filter-select:hover, .filter-select:focus {
+.select-button:hover {
     border-color: #0018A4;
-    outline: none;
 }
 
-.sort-select {
+/* Active Filter States */
+.custom-select.has-active-filters .select-button {
+    background-color: #0018A4;
+    border-color: #0018A4;
+    color: white;
+}
+
+.custom-select.has-active-filters .arrow {
+    border-color: white;
+}
+
+/* Sort Button Specific Styles */
+.sort-section .select-button {
+    background-color: #FFECEA;
     border-color: #FFECEA;
 }
 
-.sort-select:hover, .sort-select:focus {
-    border-color: #FF6589;
-    outline: none;
+.sort-section .select-button:hover {
+    border-color: #0018A4;
 }
 
-/* Basic option styling */
-.filter-select option, .sort-select option {
-    padding: 8px;
-    font-size: 0.9rem;
+/* Add active sort state */
+.custom-select.has-active-sort .select-button {
+    background-color: #FF6589;
+    border-color: #0018A4;
+    color: white;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-    body {
-        padding: 1rem;
-    }
-
-    h1 {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .filters {
-        padding: 1rem;
-        gap: 1rem;
-    }
-
-    .filter-section, .sort-section {
-        width: 100%;
-    }
-
-    .filter-select, .sort-select {
-        height: 56px; /* Larger touch target */
-        font-size: 16px; /* Native font size to prevent zoom on iOS */
-        padding: 0.75rem 3rem 0.75rem 1rem; /* More space for the arrow */
-        background-position: right 1.25rem center;
-        background-size: 14px; /* Slightly larger arrow */
-    }
-
-    /* Ensure dropdown options are large enough */
-    .filter-select option, .sort-select option {
-        font-size: 16px;
-        padding: 12px;
-    }
-
-    /* Adjust recipe grid for mobile */
-    .recipes-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .recipe-card {
-        margin-bottom: 1rem;
-    }
-
-    .recipe-content {
-        padding: 1rem;
-    }
-
-    .recipe-title {
-        font-size: 1.1rem;
-    }
-
-    .recipe-info {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    /* Make ingredients list more readable on mobile */
-    .recipe-ingredients ul {
-        padding-left: 0;
-    }
-
-    .recipe-ingredients li {
-        padding: 0.5rem 0;
-        border-bottom: 1px solid #eee;
-    }
-
-    .recipe-ingredients li:last-child {
-        border-bottom: none;
-    }
+.custom-select.has-active-sort .arrow {
+    border-color: white;
 }
 
-/* Additional mobile optimization for very small screens */
-@media (max-width: 360px) {
-    body {
-        padding: 0.75rem;
-    }
-
-    h1 {
-        font-size: 1.75rem;
-    }
-
-    .filters {
-        padding: 0.75rem;
-    }
-
-    .filter-select, .sort-select {
-        font-size: 16px;
-    }
+/* Dropdown Arrow */
+.arrow {
+    border-style: solid;
+    border-width: 2px 2px 0 0;
+    content: '';
+    display: inline-block;
+    height: 8px;
+    width: 8px;
+    position: relative;
+    transform: rotate(135deg);
+    vertical-align: middle;
+    margin-left: 8px;
 }
 
+.custom-select.open .arrow {
+    transform: rotate(-45deg);
+    top: 2px;
+}
+
+/* Dropdown Menu */
+.select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    margin-top: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #eee;
+    display: none;
+    z-index: 100;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.custom-select.open .select-dropdown {
+    display: block;
+}
+
+.select-dropdown li {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    list-style: none;
+}
+
+.select-dropdown li:hover {
+    background-color: #f5f5f5;
+}
+
+/* Checkbox Styles */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.selected-value {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 24px);
+}
+
+/* Recipe Grid */
 .recipes-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
+    min-height: 200px;
 }
 
+/* Recipe Cards */
 .recipe-card {
     background: white;
     border-radius: 12px;
@@ -196,12 +193,6 @@ h1 {
     transform: translateY(-5px);
     box-shadow: 0 8px 24px rgba(0, 24, 164, 0.15);
     border-color: #0018A4;
-}
-
-.recipe-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
 }
 
 .recipe-content {
@@ -241,143 +232,16 @@ h1 {
     margin-bottom: 0.25rem;
 }
 
-.custom-select {
-    position: relative;
-    width: 100%;
-}
-
-/* Update select button styling */
-.select-button {
-    width: 100%;
-    padding: 1rem;
-    border: 2px solid #CCFFE2;
-    border-radius: 8px;
-    background-color: #CCFFE2;  /* Default green background */
-    font-size: 1rem;
-    cursor: pointer;
-    color: #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 56px;
-    transition: all 0.2s ease;
-}
-
-/* Hover state */
-.select-button:hover {
-    border-color: #0018A4;
-}
-
-/* Active filter state */
-.custom-select.has-active-filters .select-button {
-    background-color: #0018A4;
-    border-color: #0018A4;
-    color: white;
-}
-
-.custom-select.has-active-filters .arrow {
-    border-color: white;
-}
-
-/* Keep sort button styling separate */
-.sort-section .select-button {
-    background-color: #FFECEA;
-    border-color: #FFECEA;
-}
-
-.sort-section .select-button:hover {
-    border-color: #0018A4;
-}
-
-.arrow {
-    border-style: solid;
-    border-width: 2px 2px 0 0;
-    content: '';
-    display: inline-block;
-    height: 8px;
-    width: 8px;
-    position: relative;
-    transform: rotate(135deg);
-    vertical-align: middle;
-    margin-left: 8px;
-}
-
-.custom-select.open .arrow {
-    transform: rotate(-45deg);
-    top: 2px;
-}
-
-.select-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    border-radius: 8px;
-    margin-top: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border: 1px solid #eee;
-    display: none;
-    z-index: 100;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.custom-select.open .select-dropdown {
-    display: block;
-}
-
-.select-dropdown li {
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-    list-style: none;
-}
-
-.select-dropdown li:hover {
-    background-color: #f5f5f5;
-}
-
-/* Mobile optimizations */
-@media (max-width: 768px) {
-    .select-button {
-        font-size: 16px;
-    }
-
-    .select-dropdown li {
-        padding: 1rem;
-        font-size: 16px;
-    }
-}
-
-/* Add these styles for checkboxes */
-.checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    cursor: pointer;
-}
-
-.checkbox-label input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-}
-
-/* Style for showing multiple selections */
-.selected-value {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: calc(100% - 24px); /* Space for arrow */
-}
-
-/* Update message card styles */
+/* Message Card */
 .message-card {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
+    grid-column: 1 / -1;
     padding: 1.5rem;
+}
+
+.message-card:hover {
+    transform: none;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .message-container {
@@ -397,47 +261,10 @@ h1 {
     margin-bottom: 0;
 }
 
-/* Update message card to not have hover effects */
-.message-card:hover {
-    transform: none;
-    border-color: transparent;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-}
-
-/* Ensure the recipe cards have consistent styling */
-.recipe-card {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.recipe-card:hover {
-    
-}
-
-.recipe-content {
-    padding: 1.5rem;
-}
-
-/* Update grid layout to ensure two cards per row */
-.recipes-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-}
-
-@media (max-width: 768px) {
-    .recipes-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* No results state styling */
+/* No Results State */
 .no-results-card {
-    grid-column: 1 / -1; /* Span all columns */
+    grid-column: 1 / -1;
     text-align: center;
-    background: white;
     padding: 3rem 1rem;
 }
 
@@ -467,25 +294,77 @@ h1 {
     margin: 0;
 }
 
-/* Update message card for consistency */
-.message-card {
-    grid-column: 1 / -1; /* Span all columns */
-}
-
-/* Ensure proper spacing in grid */
-.recipes-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-    min-height: 200px; /* Ensure grid has minimum height */
-}
-
+/* Media Queries */
 @media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .filters {
+        padding: 1rem;
+    }
+
+    .filter-section, 
+    .sort-section {
+        width: 100%;
+    }
+
+    .select-button,
+    .select-dropdown li {
+        font-size: 16px;
+    }
+
+    .recipes-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .recipe-content {
+        padding: 1rem;
+    }
+
+    .recipe-info {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .recipe-ingredients ul {
+        padding-left: 0;
+    }
+
+    .recipe-ingredients li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .recipe-ingredients li:last-child {
+        border-bottom: none;
+    }
+
     .no-results-card {
         padding: 2rem 1rem;
     }
 
     .no-results-content h3 {
         font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 360px) {
+    body {
+        padding: 0.75rem;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    .filters {
+        padding: 0.75rem;
     }
 }

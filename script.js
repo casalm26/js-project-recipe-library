@@ -52,7 +52,7 @@ let currentFilters = {
     time: [],
     ingredients: []
 };
-let currentSort = 'time';
+let currentSort = 'none';
 
 // Add a messages array to store filter/sort history
 let filterMessages = [];
@@ -186,6 +186,11 @@ const filterRecipes = () => {
 
 // Sort recipes
 const sortRecipes = (recipesToSort) => {
+    if (currentSort === 'none') {
+        renderRecipes(recipesToSort);
+        return;
+    }
+
     const sortedRecipes = [...recipesToSort].sort((a, b) => {
         switch (currentSort) {
             case 'time':
@@ -298,6 +303,14 @@ customSelects.forEach(select => {
                 selectedValue.textContent = option.textContent;
                 select.classList.remove('open');
                 currentSort = option.dataset.value;
+                
+                // Add or remove active class based on sort value
+                if (currentSort === 'none') {
+                    select.classList.remove('has-active-sort');
+                } else {
+                    select.classList.add('has-active-sort');
+                }
+                
                 addFilterMessage('sort', option.textContent);
             });
         });
