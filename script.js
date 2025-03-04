@@ -271,9 +271,7 @@ const filterRecipes = () => {
     // Apply cuisine filters
     if (currentFilters.cuisine.length > 0) {
         filteredRecipes = filteredRecipes.filter(recipe => 
-            currentFilters.cuisine.some(cuisine => 
-                recipe.cuisine.toLowerCase() === cuisine.toLowerCase()
-            )
+            currentFilters.cuisine.includes(recipe.cuisine.toLowerCase())
         );
     }
 
