@@ -1,41 +1,157 @@
-// Sample recipe data
 const recipes = [
     {
         id: 1,
-        title: "Placeholder Recipe",
-        cuisine: "Mexican", 
-        time: 90,
-        image: "path_to_recipe_image.jpg",
+        title: "Vegan Lentil Soup",
+        cuisine: "Mediterranean",
+        time: 30,
+        image: "./chicken.webp",
         ingredients: [
-            "6 bone-in chicken breast halves",
-            "1/2 teaspoon coarse salt",
-            "1/2 teaspoon Mrs. Dash seasoning", 
-            "1/4 teaspoon black pepper"
+            "red lentils",
+            "carrots", 
+            "onion",
+            "garlic",
+            "tomato paste",
+            "cumin",
+            "paprika", 
+            "vegetable broth",
+            "olive oil",
+            "salt"
         ],
-        dietary: ["dairy-free", "gluten-free"],
-        ingredientCount: 4,
-        popularity: 4.5,
-        pricePerServing: 3.50
+        dietary: ["vegan"],
+        ingredientCount: 10,
+        popularity: 85,
+        pricePerServing: 2.50
     },
     {
         id: 2,
-        title: "Cheat's cheesy Focaccia",
+        title: "Vegetarian Pesto Pasta",
         cuisine: "Italian",
-        time: 40,
-        image: "path_to_focaccia_image.jpg",
+        time: 25,
+        image: "./chicken.webp",
         ingredients: [
-            "500g pack bread mix",
-            "2tbsp olive oil, plus a little extra for drizzling",
-            "25g parmesan (or vegetarian alternative), grated",
-            "75g dolcelatte cheese (or vegetarian alternative)"
+            "pasta",
+            "basil",
+            "parmesan cheese",
+            "garlic",
+            "pine nuts",
+            "olive oil",
+            "salt",
+            "black pepper"
         ],
         dietary: ["vegetarian"],
-        ingredientCount: 4,
-        popularity: 4.2,
-        pricePerServing: 2.75
+        ingredientCount: 8,
+        popularity: 92,
+        pricePerServing: 3.00
     },
-    // Add more recipes here
-];
+    {
+        id: 3,
+        title: "Gluten-Free Chicken Stir-Fry",
+        cuisine: "Asian",
+        time: 20,
+        image: "./chicken.webp",
+        ingredients: [
+            "chicken breast",
+            "broccoli",
+            "bell pepper",
+            "carrot",
+            "soy sauce (gluten-free)",
+            "ginger",
+            "garlic",
+            "sesame oil",
+            "cornstarch",
+            "green onion",
+            "sesame seeds",
+            "rice"
+        ],
+        dietary: ["gluten-free"],
+        ingredientCount: 12,
+        popularity: 78,
+        pricePerServing: 4.00
+    },
+    {
+        id: 4,
+        title: "Dairy-Free Tacos",
+        cuisine: "Mexican",
+        time: 15,
+        image: "./chicken.webp",
+        ingredients: [
+            "corn tortillas",
+            "ground beef",
+            "taco seasoning",
+            "lettuce",
+            "tomato",
+            "avocado"
+        ],
+        dietary: ["dairy-free"],
+        ingredientCount: 6,
+        popularity: 88,
+        pricePerServing: 2.80
+    },
+    {
+        id: 5,
+        title: "Middle Eastern Hummus",
+        cuisine: "Middle Eastern",
+        time: 10,
+        image: "./chicken.webp",
+        ingredients: [
+            "chickpeas",
+            "tahini",
+            "garlic",
+            "lemon juice",
+            "olive oil"
+        ],
+        dietary: ["vegan", "gluten-free"],
+        ingredientCount: 5,
+        popularity: 95,
+        pricePerServing: 1.50
+    },
+    {
+        id: 6,
+        title: "Quick Avocado Toast",
+        cuisine: "Mediterranean",
+        time: 5,
+        image: "./chicken.webp",
+        ingredients: [
+            "bread",
+            "avocado",
+            "lemon juice",
+            "salt"
+        ],
+        dietary: ["vegan"],
+        ingredientCount: 4,
+        popularity: 90,
+        pricePerServing: 2.00
+    },
+    {
+        id: 7,
+        title: "Beef Stew",
+        cuisine: "European",
+        time: 90,
+        image: "./chicken.webp",
+        ingredients: [
+            "beef chunks",
+            "potatoes",
+            "carrots",
+            "onion",
+            "garlic",
+            "tomato paste",
+            "beef broth",
+            "red wine",
+            "bay leaves",
+            "thyme",
+            "salt",
+            "black pepper",
+            "butter",
+            "flour",
+            "celery",
+            "mushrooms"
+        ],
+        dietary: [],
+        ingredientCount: 16,
+        popularity: 80,
+        pricePerServing: 5.50
+    }
+]
 
 // DOM Elements
 const recipesContainer = document.getElementById('recipesContainer');
@@ -155,7 +271,9 @@ const filterRecipes = () => {
     // Apply cuisine filters
     if (currentFilters.cuisine.length > 0) {
         filteredRecipes = filteredRecipes.filter(recipe => 
-            currentFilters.cuisine.includes(recipe.cuisine.toLowerCase())
+            currentFilters.cuisine.some(cuisine => 
+                recipe.cuisine.toLowerCase() === cuisine.toLowerCase()
+            )
         );
     }
 
