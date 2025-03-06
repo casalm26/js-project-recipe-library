@@ -238,19 +238,21 @@ const createNoResultsCard = () => {
 
 const createRecipeCard = (recipe) => {
     const recipeHtml = `
-        <div class="recipe-content">
-            <h3 class="recipe-title">${recipe.title}</h3>
-            <div class="recipe-info">
-                <p>Cuisine: ${recipe.cuisine}</p>
-                <p>Time: ${recipe.time} minutes</p>
+        <a href="#recipe-${recipe.id}" class="recipe-link">
+            <div class="recipe-content">
+                <h3 class="recipe-title">${recipe.title}</h3>
+                <div class="recipe-info">
+                    <p>Cuisine: ${recipe.cuisine}</p>
+                    <p>Time: ${recipe.time} minutes</p>
+                </div>
+                <div class="recipe-ingredients">
+                    <h4>Ingredients:</h4>
+                    <ul>
+                        ${recipe.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
+                    </ul>
+                </div>
             </div>
-            <div class="recipe-ingredients">
-                <h4>Ingredients:</h4>
-                <ul>
-                    ${recipe.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
-                </ul>
-            </div>
-        </div>
+        </a>
     `;
     return createCard('recipe-card', recipeHtml);
 };
