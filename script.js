@@ -173,212 +173,277 @@ let currentSort = 'none';
 // Add a messages array to store filter/sort history
 let filterMessages = [];
 
-// Render recipes
+// Helper functions
+const createFilterMessage = (filterType, selectedItems) => {
+    const filterNames = {
+        dietary: 'dietary preferences',
+        cuisine: 'cuisines',
+        ingredients: 'ingredient counts'
+    };
+
+    if (filterType === 'sort') {
+        return `Sorted by: ${selectedItems}`;
+    }
+
+    if (filterType === 'time') {
+        const timeValues = currentFilters.time.map(t => parseInt(t)).sort((a, b) => a - b);
+        if (!timeValues.length) return `Cleared cooking times filter`;
+        
+        if (timeValues.includes(61)) {
+            return `Selected cooking times: Over 60 min`;
+        }
+        const minTime = 0;
+        const maxTime = Math.max(...timeValues);
+        return `Selected cooking times: ${minTime} to ${maxTime} min`;
+    }
+
+    if (filterType === 'random') {
+        return `Selected "${selectedItems[0]}"`;
+    }
+
+    return selectedItems.length === 0
+        ? `Cleared ${filterNames[filterType]} filter`
+        : `Selected ${filterNames[filterType]}: ${selectedItems.join(', ')}`;
+};
+
+const createMessageCard = () => {
+    const messageHtml = `
+        <div class="recipe-content">
+            <h3 class="recipe-title">Filter and Sort History</h3>
+            <div class="message-container">
+                ${filterMessages.length > 0 
+                    ? filterMessages.map(msg => `<p class="filter-message">${msg}</p>`).join('')
+                    : '<p class="filter-message">No filters or sorting applied yet</p>'
+                }
+            </div>
+        </div>
+    `;
+    return createCard('message-card', messageHtml);
+};
+
+const createNoResultsCard = () => {
+    const noResultsHtml = `
+        <div class="recipe-content">
+            <div class="no-results-content">
+                <svg class="no-results-icon" viewBox="0 0 24 24" width="48" height="48">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <h3>No recipes found ${formatFilterDescription(currentFilters)}.</h3>
+                <p>Try adjusting your filters to find more recipes</p>
+            </div>
+        </div>
+    `;
+    return createCard('no-results-card', noResultsHtml);
+};
+
+const createRecipeCard = (recipe) => {
+    const recipeHtml = `
+        <div class="recipe-content">
+            <h3 class="recipe-title">${recipe.title}</h3>
+            <div class="recipe-info">
+                <p>Cuisine: ${recipe.cuisine}</p>
+                <p>Time: ${recipe.time} minutes</p>
+            </div>
+            <div class="recipe-ingredients">
+                <h4>Ingredients:</h4>
+                <ul>
+                    ${recipe.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
+                </ul>
+            </div>
+        </div>
+    `;
+    return createCard('recipe-card', recipeHtml);
+};
+
+const createCard = (className, innerHTML) => {
+    const card = document.createElement('div');
+    card.className = `recipe-card ${className}`;
+    card.innerHTML = innerHTML;
+    return card;
+};
+
+const formatFilterDescription = (filters) => {
+    return Object.entries(filters)
+        .filter(([filter, values]) => values.length > 0)
+        .map(([filter, values]) => {
+            switch(filter) {
+                case 'dietary':
+                    return `that are ${values.join(' and ')}`;
+                case 'cuisine':
+                    return `from ${values.join(' or ')} cuisine`;
+                case 'time':
+                    return `with a cooking time of ${values.join(' or ')} mins`;
+                case 'ingredients':
+                    return `with ${values.join(' or ')} ingredients`;
+                default:
+                    return '';
+            }
+        })
+        .filter(text => text)
+        .reduce((acc, text, i, arr) => {
+            if (i === 0) return text;
+            if (i === arr.length - 1) return `${acc} and ${text}`;
+            return `${acc}, ${text}`;
+        }, '');
+};
+
+// Filter and sort functions
+const applyDietaryFilter = (recipes) => 
+    !currentFilters.dietary.length ? recipes :
+    recipes.filter(recipe => 
+        currentFilters.dietary.every(diet => recipe.dietary.includes(diet))
+    );
+
+const applyCuisineFilter = (recipes) =>
+    !currentFilters.cuisine.length ? recipes :
+    recipes.filter(recipe => 
+        currentFilters.cuisine.some(cuisine => 
+            recipe.cuisine.toLowerCase() === cuisine.toLowerCase()
+        )
+    );
+
+const applyTimeFilter = (recipes) =>
+    !currentFilters.time.length ? recipes :
+    recipes.filter(recipe => 
+        currentFilters.time.some(timeLimit => {
+            const limit = parseInt(timeLimit);
+            return limit === 61 ? recipe.time > 60 : recipe.time <= limit;
+        })
+    );
+
+const applyIngredientsFilter = (recipes) =>
+    !currentFilters.ingredients.length ? recipes :
+    recipes.filter(recipe => 
+        currentFilters.ingredients.some(limit => {
+            const count = parseInt(limit);
+            return count === 16 ? recipe.ingredientCount >= 16 : recipe.ingredientCount <= count;
+        })
+    );
+
+const sortRecipes = (recipes) => {
+    if (currentSort === 'none') return recipes;
+
+    const sortFunctions = {
+        time: (a, b) => a.time - b.time,
+        popularity: (a, b) => b.popularity - a.popularity,
+        price: (a, b) => a.pricePerServing - b.pricePerServing,
+        ingredients: (a, b) => a.ingredientCount - b.ingredientCount
+    };
+
+    return [...recipes].sort(sortFunctions[currentSort] || (() => 0));
+};
+
+// Main functions
+const filterRecipes = () => {
+    let filteredRecipes = recipes;
+    filteredRecipes = applyDietaryFilter(filteredRecipes);
+    filteredRecipes = applyCuisineFilter(filteredRecipes);
+    filteredRecipes = applyTimeFilter(filteredRecipes);
+    filteredRecipes = applyIngredientsFilter(filteredRecipes);
+    
+    renderRecipes(sortRecipes(filteredRecipes), false);
+};
+
 const renderRecipes = (recipesToRender, isRandomRecipe = false) => {
     recipesContainer.innerHTML = '';
     
-    // Create and append the message card only if not showing a random recipe
     if (!isRandomRecipe) {
-        const messageCard = document.createElement('div');
-        messageCard.className = 'recipe-card message-card';
-        messageCard.innerHTML = `
-            <div class="recipe-content">
-                <h3 class="recipe-title">Filter and Sort History</h3>
-                <div class="message-container">
-                    ${filterMessages.length > 0 
-                        ? filterMessages.map(msg => `<p class="filter-message">${msg}</p>`).join('')
-                        : '<p class="filter-message">No filters or sorting applied yet</p>'
-                    }
-                </div>
-            </div>
-        `;
-        recipesContainer.appendChild(messageCard);
+        recipesContainer.appendChild(createMessageCard());
     }
     
-    // Add no results message if no recipes match filters
     if (recipesToRender.length === 0) {
-        const noResultsCard = document.createElement('div');
-        noResultsCard.className = 'recipe-card no-results-card';
-        noResultsCard.innerHTML = `
-            <div class="recipe-content">
-                <div class="no-results-content">
-                    <svg class="no-results-icon" viewBox="0 0 24 24" width="48" height="48">
-                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                    </svg>
-                    <h3>No recipes found ${Object.entries(currentFilters)
-                        .filter(([filter, values]) => values.length > 0)
-                        .map(([filter, values]) => {
-                            if (filter === 'dietary' && values.length) {
-                                return `that are ${values.join(' and ')}`;
-                            } else if (filter === 'cuisine' && values.length) {
-                                return `from ${values.join(' or ')} cuisine`;
-                            } else if (filter === 'time' && values.length) {
-                                return `with a cooking time of ${values.join(' or ')} mins`;
-                            } else if (filter === 'ingredients' && values.length) {
-                                return `with ${values.join(' or ')} ingredients`;
-                            } else {
-                                return '';
-                            }
-                        })
-                        .filter(text => text)
-                        .reduce((acc, text, i, arr) => {
-                            if (i === 0) return text;
-                            if (i === arr.length - 1) return `${acc} and ${text}`;
-                            return `${acc}, ${text}`;
-                        }, '')}.</h3>
-                    <p>Try adjusting your filters to find more recipes</p>
-                </div>
-            </div>
-        `;
-        recipesContainer.appendChild(noResultsCard);
+        recipesContainer.appendChild(createNoResultsCard());
         return;
     }
     
-    // Render recipe cards
     recipesToRender.forEach(recipe => {
-        const recipeCard = document.createElement('div');
-        recipeCard.className = 'recipe-card';
-        recipeCard.innerHTML = `
-            <div class="recipe-content">
-                <h3 class="recipe-title">${recipe.title}</h3>
-                <div class="recipe-info">
-                    <p>Cuisine: ${recipe.cuisine}</p>
-                    <p>Time: ${recipe.time} minutes</p>
-                </div>
-                <div class="recipe-ingredients">
-                    <h4>Ingredients:</h4>
-                    <ul>
-                        ${recipe.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
-                    </ul>
-                </div>
-            </div>
-        `;
-        recipesContainer.appendChild(recipeCard);
+        recipesContainer.appendChild(createRecipeCard(recipe));
     });
 };
 
-// Filter recipes
-const filterRecipes = () => {
-    let filteredRecipes = recipes;
-
-    // Apply dietary filters
-    if (currentFilters.dietary.length > 0) {
-        filteredRecipes = filteredRecipes.filter(recipe => 
-            currentFilters.dietary.every(diet => 
-                recipe.dietary.includes(diet)
-            )
-        );
-    }
-
-    // Apply cuisine filters
-    if (currentFilters.cuisine.length > 0) {
-        filteredRecipes = filteredRecipes.filter(recipe => 
-            currentFilters.cuisine.some(cuisine => 
-                recipe.cuisine.toLowerCase() === cuisine.toLowerCase()
-            )
-        );
-    }
-
-    // Apply time filters
-    if (currentFilters.time.length > 0) {
-        filteredRecipes = filteredRecipes.filter(recipe => 
-            currentFilters.time.some(timeLimit => {
-                const limit = parseInt(timeLimit);
-                if (limit === 61) return recipe.time > 60;
-                return recipe.time <= limit;
-            })
-        );
-    }
-
-    // Apply ingredients filters
-    if (currentFilters.ingredients.length > 0) {
-        filteredRecipes = filteredRecipes.filter(recipe => 
-            currentFilters.ingredients.some(ingredientLimit => {
-                const limit = parseInt(ingredientLimit);
-                if (limit === 16) return recipe.ingredientCount >= 16;
-                return recipe.ingredientCount <= limit;
-            })
-        );
-    }
-
-    sortRecipes(filteredRecipes);
-};
-
-// Sort recipes
-const sortRecipes = (recipesToSort) => {
-    if (currentSort === 'none') {
-        renderRecipes(recipesToSort, false);
-        return;
-    }
-
-    const sortedRecipes = [...recipesToSort].sort((a, b) => {
-        switch (currentSort) {
-            case 'time':
-                return a.time - b.time;
-            case 'popularity':
-                return b.popularity - a.popularity;
-            case 'price':
-                return a.pricePerServing - b.pricePerServing;
-            case 'ingredients':
-                return a.ingredientCount - b.ingredientCount;
-            default:
-                return 0;
-        }
-    });
-    
-    renderRecipes(sortedRecipes, false);
-};
-
-// Add function to create messages for filter changes
 const addFilterMessage = (filterType, selectedItems) => {
-    let message = '';
-    const timestamp = new Date().toLocaleTimeString();
-    
-    if (filterType === 'sort') {
-        message = `Sorted by: ${selectedItems}`;
-    } else {
-        const filterNames = {
-            dietary: 'dietary preferences',
-            cuisine: 'cuisines',
-            time: 'cooking times',
-            ingredients: 'ingredient counts'
-        };
-        
-        if (selectedItems.length === 0) {
-            message = `Cleared ${filterNames[filterType]} filter`;
-        } else {
-            message = `Selected ${filterNames[filterType]}: ${selectedItems.join(', ')}`;
-        }
-    }
-    
+    const message = createFilterMessage(filterType, selectedItems);
     filterMessages.unshift(message);
-    if (filterMessages.length > 5) {
-        filterMessages.pop();
-    }
-    filterRecipes(); // Ensure the display updates
+    if (filterMessages.length > 5) filterMessages.pop();
+    filterRecipes();
 };
 
-// Handle custom select functionality
+const resetUIState = () => {
+    customSelects.forEach(select => {
+        const filterType = select.dataset.filterType;
+        const selectedValue = select.querySelector('.selected-value');
+        
+        if (filterType !== 'sort') {
+            select.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            select.classList.remove('has-active-filters');
+        }
+        
+        const defaultText = {
+            dietary: 'Dietary Preferences',
+            cuisine: 'Cuisines',
+            time: 'Cooking Time',
+            ingredients: 'No. of Ingredients'
+        }[filterType] || 'No sorting';
+        
+        selectedValue.textContent = defaultText;
+        if (filterType === 'sort') {
+            select.classList.remove('has-active-sort');
+        }
+    });
+};
+
+// Event handlers
+const clearAllFilters = () => {
+    currentFilters = {
+        dietary: [],
+        cuisine: [],
+        time: [],
+        ingredients: []
+    };
+    currentSort = 'none';
+    filterMessages = [];
+    resetUIState();
+    filterRecipes();
+};
+
+const handleRandomRecipe = () => {
+    const randomRecipe = recipes[Math.floor(Math.random() * recipes.length)];
+    currentFilters = {
+        dietary: [],
+        cuisine: [],
+        time: [],
+        ingredients: []
+    };
+    currentSort = 'none';
+    resetUIState();
+    addFilterMessage('random', [randomRecipe.title]);
+    renderRecipes([randomRecipe], true);
+};
+
+// Event listeners
+const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+const randomRecipeBtn = document.getElementById('randomRecipeBtn');
+
+clearFiltersBtn.addEventListener('click', clearAllFilters);
+randomRecipeBtn.addEventListener('click', handleRandomRecipe);
+
 customSelects.forEach(select => {
     const button = select.querySelector('.select-button');
     const selectedValue = button.querySelector('.selected-value');
     const dropdown = select.querySelector('.select-dropdown');
     const filterType = select.dataset.filterType;
 
-    // Toggle dropdown
     button.addEventListener('click', (e) => {
         e.stopPropagation();
         select.classList.toggle('open');
-        
-        // Close other dropdowns
-        document.querySelectorAll('.custom-select.open').forEach(openSelect => {
-            if (openSelect !== select) {
-                openSelect.classList.remove('open');
-            }
-        });
+        document.querySelectorAll('.custom-select.open')
+            .forEach(openSelect => {
+                if (openSelect !== select) openSelect.classList.remove('open');
+            });
     });
 
-    // Handle checkbox changes for filter types
     if (filterType !== 'sort') {
         const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
@@ -388,163 +453,39 @@ customSelects.forEach(select => {
                 if (checkbox.checked) {
                     currentFilters[filterType].push(value);
                 } else {
-                    currentFilters[filterType] = currentFilters[filterType].filter(v => v !== value);
+                    currentFilters[filterType] = currentFilters[filterType]
+                        .filter(v => v !== value);
                 }
 
                 const selectedItems = Array.from(checkboxes)
                     .filter(cb => cb.checked)
                     .map(cb => cb.parentElement.textContent.trim());
 
-                // Add or remove active class based on selection
-                if (selectedItems.length > 0) {
-                    select.classList.add('has-active-filters');
-                } else {
-                    select.classList.remove('has-active-filters');
-                }
-
-                const defaultText = {
-                    dietary: 'Dietary Preferences',
-                    cuisine: 'Cuisines',
-                    time: 'Cooking Time',
-                    ingredients: 'No. of Ingredients'
-                }[filterType];
-
+                select.classList.toggle('has-active-filters', selectedItems.length > 0);
                 selectedValue.textContent = selectedItems.length > 0 
                     ? selectedItems.join(', ')
-                    : defaultText;
+                    : button.dataset.defaultText;
 
                 addFilterMessage(filterType, selectedItems);
             });
         });
     } else {
-        // Handle regular single-select options for sort
         dropdown.querySelectorAll('li').forEach(option => {
             option.addEventListener('click', () => {
                 selectedValue.textContent = option.textContent;
                 select.classList.remove('open');
                 currentSort = option.dataset.value;
-                
-                // Add or remove active class based on sort value
-                if (currentSort === 'none') {
-                    select.classList.remove('has-active-sort');
-                } else {
-                    select.classList.add('has-active-sort');
-                }
-                
+                select.classList.toggle('has-active-sort', currentSort !== 'none');
                 addFilterMessage('sort', option.textContent);
             });
         });
     }
 });
 
-// Close dropdowns when clicking outside
 document.addEventListener('click', () => {
-    document.querySelectorAll('.custom-select.open').forEach(select => {
-        select.classList.remove('open');
-    });
-});
-
-// Random recipe functionality
-const randomRecipeBtn = document.getElementById('randomRecipeBtn');
-
-randomRecipeBtn.addEventListener('click', () => {
-    // Get a random recipe from the original recipes array
-    const randomIndex = Math.floor(Math.random() * recipes.length);
-    const randomRecipe = recipes[randomIndex];
-    
-    // Clear filters and sort
-    currentFilters = {
-        dietary: [],
-        cuisine: [],
-        time: [],
-        ingredients: []
-    };
-    currentSort = 'none';
-    
-    // Reset UI for filters and sort
-    document.querySelectorAll('.custom-select').forEach(select => {
-        const filterType = select.dataset.filterType;
-        const selectedValue = select.querySelector('.selected-value');
-        
-        // Reset checkboxes
-        if (filterType !== 'sort') {
-            select.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            select.classList.remove('has-active-filters');
-            
-            // Reset text
-            const defaultText = {
-                dietary: 'Dietary Preferences',
-                cuisine: 'Cuisines',
-                time: 'Cooking Time',
-                ingredients: 'No. of Ingredients'
-            }[filterType];
-            
-            selectedValue.textContent = defaultText;
-        } else {
-            // Reset sort
-            selectedValue.textContent = 'No sorting';
-            select.classList.remove('has-active-sort');
-        }
-    });
-    
-    // Add message about random recipe
-    addFilterMessage('random', [`Selected "${randomRecipe.title}"`]);
-    
-    // Render only the random recipe and specify it's a random recipe
-    renderRecipes([randomRecipe], true);
+    document.querySelectorAll('.custom-select.open')
+        .forEach(select => select.classList.remove('open'));
 });
 
 // Initial render
 filterRecipes();
-
-// Clear all filters functionality
-const clearFiltersBtn = document.getElementById('clearFiltersBtn');
-
-const clearAllFilters = () => {
-    // Clear filter state
-    currentFilters = {
-        dietary: [],
-        cuisine: [],
-        time: [],
-        ingredients: []
-    };
-    currentSort = 'none';
-    
-    // Reset UI for filters and sort
-    document.querySelectorAll('.custom-select').forEach(select => {
-        const filterType = select.dataset.filterType;
-        const selectedValue = select.querySelector('.selected-value');
-        
-        // Reset checkboxes
-        if (filterType !== 'sort') {
-            select.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            select.classList.remove('has-active-filters');
-            
-            // Reset text
-            const defaultText = {
-                dietary: 'Dietary Preferences',
-                cuisine: 'Cuisines',
-                time: 'Cooking Time',
-                ingredients: 'No. of Ingredients'
-            }[filterType];
-            
-            selectedValue.textContent = defaultText;
-        } else {
-            // Reset sort
-            selectedValue.textContent = 'No sorting';
-            select.classList.remove('has-active-sort');
-        }
-    });
-    
-    // Clear filter messages
-    filterMessages = [];
-    
-    // Re-render recipes
-    filterRecipes();
-};
-
-clearFiltersBtn.addEventListener('click', clearAllFilters);
