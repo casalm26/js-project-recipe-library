@@ -498,3 +498,53 @@ randomRecipeBtn.addEventListener('click', () => {
 
 // Initial render
 filterRecipes();
+
+// Clear all filters functionality
+const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+
+const clearAllFilters = () => {
+    // Clear filter state
+    currentFilters = {
+        dietary: [],
+        cuisine: [],
+        time: [],
+        ingredients: []
+    };
+    currentSort = 'none';
+    
+    // Reset UI for filters and sort
+    document.querySelectorAll('.custom-select').forEach(select => {
+        const filterType = select.dataset.filterType;
+        const selectedValue = select.querySelector('.selected-value');
+        
+        // Reset checkboxes
+        if (filterType !== 'sort') {
+            select.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            select.classList.remove('has-active-filters');
+            
+            // Reset text
+            const defaultText = {
+                dietary: 'Dietary Preferences',
+                cuisine: 'Cuisines',
+                time: 'Cooking Time',
+                ingredients: 'No. of Ingredients'
+            }[filterType];
+            
+            selectedValue.textContent = defaultText;
+        } else {
+            // Reset sort
+            selectedValue.textContent = 'No sorting';
+            select.classList.remove('has-active-sort');
+        }
+    });
+    
+    // Clear filter messages
+    filterMessages = [];
+    
+    // Re-render recipes
+    filterRecipes();
+};
+
+clearFiltersBtn.addEventListener('click', clearAllFilters);

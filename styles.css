@@ -24,6 +24,11 @@ body {
     margin-bottom: 2rem;
 }
 
+.header-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
 /* Typography */
 h1 {
     color: #0018A4;
@@ -309,23 +314,33 @@ h1 {
     justify-content: center;
 }
 
-.random-recipe-btn {
-    background-color: #0018A4;
-    color: white;
-    border: none;
+.random-recipe-btn,
+.clear-filters-btn {
     padding: 0.75rem 1.5rem;
     border-radius: 8px;
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s ease;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
-.random-recipe-btn:hover {
-    background-color: #000c5c;
+.random-recipe-btn, .clear-filters-btn {
+    background-color: #CCFFE2;
+    color: #0018A4;
+    border: 2px solid #0018A4;
+}
+
+.random-recipe-btn:hover,
+.clear-filters-btn:hover {
+    background-color: #0018A4;
+    color: white;
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 24, 164, 0.15);
 }
 
-.random-recipe-btn:active {
+.random-recipe-btn:active,
+.clear-filters-btn:active {
     transform: translateY(0);
 }
 
