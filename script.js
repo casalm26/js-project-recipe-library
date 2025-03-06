@@ -174,24 +174,26 @@ let currentSort = 'none';
 let filterMessages = [];
 
 // Render recipes
-const renderRecipes = (recipesToRender) => {
+const renderRecipes = (recipesToRender, isRandomRecipe = false) => {
     recipesContainer.innerHTML = '';
     
-    // Create and append the message card
-    const messageCard = document.createElement('div');
-    messageCard.className = 'recipe-card message-card';
-    messageCard.innerHTML = `
-        <div class="recipe-content">
-            <h3 class="recipe-title">Filter and Sort History</h3>
-            <div class="message-container">
-                ${filterMessages.length > 0 
-                    ? filterMessages.map(msg => `<p class="filter-message">${msg}</p>`).join('')
-                    : '<p class="filter-message">No filters or sorting applied yet</p>'
-                }
+    // Create and append the message card only if not showing a random recipe
+    if (!isRandomRecipe) {
+        const messageCard = document.createElement('div');
+        messageCard.className = 'recipe-card message-card';
+        messageCard.innerHTML = `
+            <div class="recipe-content">
+                <h3 class="recipe-title">Filter and Sort History</h3>
+                <div class="message-container">
+                    ${filterMessages.length > 0 
+                        ? filterMessages.map(msg => `<p class="filter-message">${msg}</p>`).join('')
+                        : '<p class="filter-message">No filters or sorting applied yet</p>'
+                    }
+                </div>
             </div>
-        </div>
-    `;
-    recipesContainer.appendChild(messageCard);
+        `;
+        recipesContainer.appendChild(messageCard);
+    }
     
     // Add no results message if no recipes match filters
     if (recipesToRender.length === 0) {
@@ -303,7 +305,7 @@ const filterRecipes = () => {
 // Sort recipes
 const sortRecipes = (recipesToSort) => {
     if (currentSort === 'none') {
-        renderRecipes(recipesToSort);
+        renderRecipes(recipesToSort, false);
         return;
     }
 
@@ -322,7 +324,7 @@ const sortRecipes = (recipesToSort) => {
         }
     });
     
-    renderRecipes(sortedRecipes);
+    renderRecipes(sortedRecipes, false);
 };
 
 // Add function to create messages for filter changes
@@ -438,6 +440,58 @@ document.addEventListener('click', () => {
     document.querySelectorAll('.custom-select.open').forEach(select => {
         select.classList.remove('open');
     });
+});
+
+// Random recipe functionality
+const randomRecipeBtn = document.getElementById('randomRecipeBtn');
+
+randomRecipeBtn.addEventListener('click', () => {
+    // Get a random recipe from the original recipes array
+    const randomIndex = Math.floor(Math.random() * recipes.length);
+    const randomRecipe = recipes[randomIndex];
+    
+    // Clear filters and sort
+    currentFilters = {
+        dietary: [],
+        cuisine: [],
+        time: [],
+        ingredients: []
+    };
+    currentSort = 'none';
+    
+    // Reset UI for filters and sort
+    document.querySelectorAll('.custom-select').forEach(select => {
+        const filterType = select.dataset.filterType;
+        const selectedValue = select.querySelector('.selected-value');
+        
+        // Reset checkboxes
+        if (filterType !== 'sort') {
+            select.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            select.classList.remove('has-active-filters');
+            
+            // Reset text
+            const defaultText = {
+                dietary: 'Dietary Preferences',
+                cuisine: 'Cuisines',
+                time: 'Cooking Time',
+                ingredients: 'No. of Ingredients'
+            }[filterType];
+            
+            selectedValue.textContent = defaultText;
+        } else {
+            // Reset sort
+            selectedValue.textContent = 'No sorting';
+            select.classList.remove('has-active-sort');
+        }
+    });
+    
+    // Add message about random recipe
+    addFilterMessage('random', [`Selected "${randomRecipe.title}"`]);
+    
+    // Render only the random recipe and specify it's a random recipe
+    renderRecipes([randomRecipe], true);
 });
 
 // Initial render
