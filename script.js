@@ -229,7 +229,7 @@ const createNoResultsCard = () => {
                     <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                 </svg>
                 <h3>No recipes found ${formatFilterDescription(currentFilters)}.</h3>
-                <p>Try adjusting your filters to find more recipes</p>
+                <p>Dummy, you're gonna have to adjust your filters to get some food into that belly.</p>
             </div>
         </div>
     `;
@@ -266,19 +266,18 @@ const formatFilterDescription = (filters) => {
     return Object.entries(filters)
         .filter(([filter, values]) => values.length > 0)
         .map(([filter, values]) => {
-            switch(filter) {
-                case 'dietary':
-                    return `that are ${values.join(' and ')}`;
-                case 'cuisine':
-                    return `from ${values.join(' or ')} cuisine`;
-                case 'time':
-                    return `with a cooking time of ${values.join(' or ')} mins`;
-                case 'ingredients':
-                    return `with ${values.join(' or ')} ingredients`;
-                default:
-                    return '';
+            if (filter === 'dietary') {
+                return `that are ${values.join(' and ')}`;
+            } else if (filter === 'cuisine') {
+                return `from ${values.join(' or ')} cuisine`;
+            } else if (filter === 'time') {
+                return `with a cooking time of ${values.join(' or ')} mins`;
+            } else if (filter === 'ingredients') {
+                return `with ${values.join(' or ')} ingredients`;
+            } else {
+                return '';
             }
-        })
+            })
         .filter(text => text)
         .reduce((acc, text, i, arr) => {
             if (i === 0) return text;
@@ -288,13 +287,13 @@ const formatFilterDescription = (filters) => {
 };
 
 // Filter and sort functions
-const applyDietaryFilter = (recipes) => 
+const dietaryFilter = (recipes) => 
     !currentFilters.dietary.length ? recipes :
     recipes.filter(recipe => 
         currentFilters.dietary.every(diet => recipe.dietary.includes(diet))
     );
 
-const applyCuisineFilter = (recipes) =>
+const cuisineFilter = (recipes) =>
     !currentFilters.cuisine.length ? recipes :
     recipes.filter(recipe => 
         currentFilters.cuisine.some(cuisine => 
@@ -302,7 +301,7 @@ const applyCuisineFilter = (recipes) =>
         )
     );
 
-const applyTimeFilter = (recipes) =>
+const timeFilter = (recipes) =>
     !currentFilters.time.length ? recipes :
     recipes.filter(recipe => 
         currentFilters.time.some(timeLimit => {
@@ -311,7 +310,7 @@ const applyTimeFilter = (recipes) =>
         })
     );
 
-const applyIngredientsFilter = (recipes) =>
+const ingredientsFilter = (recipes) =>
     !currentFilters.ingredients.length ? recipes :
     recipes.filter(recipe => 
         currentFilters.ingredients.some(limit => {
@@ -336,10 +335,10 @@ const sortRecipes = (recipes) => {
 // Main functions
 const filterRecipes = () => {
     let filteredRecipes = recipes;
-    filteredRecipes = applyDietaryFilter(filteredRecipes);
-    filteredRecipes = applyCuisineFilter(filteredRecipes);
-    filteredRecipes = applyTimeFilter(filteredRecipes);
-    filteredRecipes = applyIngredientsFilter(filteredRecipes);
+    filteredRecipes = dietaryFilter(filteredRecipes);
+    filteredRecipes = cuisineFilter(filteredRecipes);
+    filteredRecipes = timeFilter(filteredRecipes);
+    filteredRecipes = ingredientsFilter(filteredRecipes);
     
     renderRecipes(sortRecipes(filteredRecipes), false);
 };
