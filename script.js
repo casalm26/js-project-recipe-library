@@ -32,27 +32,16 @@ const ingredientsSelect = document.querySelector('[data-filter-type="ingredients
 const sortSelect = document.querySelector('[data-filter-type="sort"]');
 const randomRecipeBtn = document.getElementById('randomRecipeBtn');
 const clearFiltersBtn = document.getElementById('clearFiltersBtn');
-
-// Add search input to the header
-const headerButtons = document.querySelector('.header-buttons');
-const searchContainer = document.createElement('div');
-searchContainer.className = 'search-container';
-searchContainer.innerHTML = `
-    <input type="text" id="searchInput" placeholder="Search recipes or ingredients..." class="search-input">
-    <button id="searchBtn" class="search-btn">Search</button>
-`;
-headerButtons.parentNode.insertBefore(searchContainer, headerButtons);
+const searchInput = document.querySelector('.search-input');
+const searchBtn = document.querySelector('.search-btn');
 
 // Add favorites button to header
+const headerButtons = document.querySelector('.header-buttons');
 const favoritesBtn = document.createElement('button');
 favoritesBtn.id = 'favoritesBtn';
 favoritesBtn.className = 'favorites-btn';
 favoritesBtn.textContent = 'View Favorites';
 headerButtons.appendChild(favoritesBtn);
-
-// Get new DOM elements
-const searchInput = document.getElementById('searchInput');
-const searchBtn = document.getElementById('searchBtn');
 
 // Setup custom select elements
 const customSelects = document.querySelectorAll('.custom-select');
