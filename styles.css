@@ -204,6 +204,7 @@ h1 {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.2s ease;
     border: 2px solid transparent;
+    position: relative;
 }
 
 .recipe-link {
@@ -356,6 +357,140 @@ h1 {
     transform: translateY(0);
 }
 
+/* Search styles */
+.search-container {
+    display: flex;
+    margin-bottom: var(--space-md);
+    width: 100%;
+}
+
+.search-input {
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    font-size: var(--font-size-base);
+    min-width: 0;
+}
+
+.search-btn {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border: 2px solid var(--color-primary);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: var(--space-sm) var(--space-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.search-btn:hover {
+    background-color: var(--color-white);
+    color: var(--color-primary);
+}
+
+/* Favorites button */
+.favorites-btn {
+    background-color: var(--color-white);
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: var(--space-sm);
+    margin-bottom: var(--space-sm);
+    width: 100%;
+}
+
+.favorites-btn:hover,
+.favorites-btn.active {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+/* Favorite button on recipe cards */
+.favorite-btn {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.favorite-btn svg {
+    fill: var(--color-text-light);
+    transition: all 0.2s ease;
+}
+
+.favorite-btn:hover svg,
+.favorite-btn.is-favorite svg {
+    fill: var(--color-hot-pink);
+}
+
+.favorite-btn.is-favorite {
+    background-color: rgba(255, 101, 137, 0.1);
+}
+
+/* Loading spinner */
+.loading-card {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+}
+
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    color: var(--color-text-light);
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--color-background);
+    border-top: 5px solid var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Load more button */
+.load-more-btn {
+    grid-column: 1 / -1;
+    margin: var(--space-lg) auto;
+    padding: var(--space-sm) var(--space-xl);
+    background-color: var(--color-mint);
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.load-more-btn:hover {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    transform: translateY(-2px);
+}
+
 /* Media Queries */
 @media (max-width: 768px) {
     .header {
@@ -449,5 +584,23 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
     * {
         transition: none !important;
+    }
+}
+
+/* Position adjustments for recipe card */
+.recipe-card {
+    position: relative;
+}
+
+/* Media queries updates */
+@media (min-width: 769px) {
+    .search-container {
+        width: 50%;
+        margin-bottom: 0;
+    }
+
+    .favorites-btn {
+        width: auto;
+        margin-left: var(--space-sm);
     }
 }
