@@ -235,11 +235,19 @@ const createRecipeCard = (recipe) => {
     
     // Check if recipe is in favorites
     const isFavorite = favorites.some(fav => fav.id === recipe.id);
-    
     const recipeHtml = `
-        <a href="${recipe.sourceUrl || `#recipe-${recipe.id}`}" class="recipe-link" target="_blank">
-            <div class="recipe-content">
-                ${recipe.image ? `<img src="${recipe.image}" alt="${recipe.title}" style="width:100%; border-radius:8px; margin-bottom:12px;">` : ''}
+        <div class="recipe-content">
+            <div style="position: relative;">
+                ${recipe.image ? `
+                    <img src="${recipe.image}" alt="${recipe.title}" style="width:100%; border-radius:8px; margin-bottom:12px;">
+                    <button class="favorite-btn ${isFavorite ? 'is-favorite' : ''}" data-id="${recipe.id}" style="position: absolute; top: 8px; left: 8px;">
+                        <svg viewBox="0 0 24 24" width="24" height="24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </button>
+                ` : ''}
+            </div>
+            <a href="${recipe.sourceUrl || `#recipe-${recipe.id}`}" class="recipe-link" target="_blank">
                 <h3 class="recipe-title">${recipe.title}</h3>
                 <div class="recipe-info">
                     <p>Cuisine: ${recipe.cuisines && recipe.cuisines.length ? recipe.cuisines.join(', ') : 'Various'}</p>
@@ -252,13 +260,8 @@ const createRecipeCard = (recipe) => {
                         ${ingredients.length > 8 ? `<li>+ ${ingredients.length - 8} more ingredients</li>` : ''}
                     </ul>
                 </div>
-            </div>
-        </a>
-        <button class="favorite-btn ${isFavorite ? 'is-favorite' : ''}" data-id="${recipe.id}">
-            <svg viewBox="0 0 24 24" width="24" height="24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-        </button>
+            </a>
+        </div>
     `;
     const card = createCard('recipe-card', recipeHtml);
     
@@ -342,18 +345,46 @@ const ingredientsFilter = (recipes) =>
         });
     });
 
-const searchFilter = (recipes) => 
-    !currentFilters.search ? recipes :
-    recipes.filter(recipe => {
-        const searchTerm = currentFilters.search.toLowerCase();
-        const titleMatch = recipe.title.toLowerCase().includes(searchTerm);
-        const ingredientMatch = recipe.extendedIngredients && 
-            recipe.extendedIngredients.some(ing => 
-                (ing.name && ing.name.toLowerCase().includes(searchTerm)) || 
-                (ing.original && ing.original.toLowerCase().includes(searchTerm))
-            );
-        return titleMatch || ingredientMatch;
+const searchFilter = (recipes) => {
+    // Debounce the search to avoid too frequent updates
+    let searchTimeout;
+    const performSearch = () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            const searchTerm = currentFilters.search.toLowerCase();
+            const filteredRecipes = !searchTerm ? recipes :
+                recipes.filter(recipe => {
+                    const titleMatch = recipe.title.toLowerCase().includes(searchTerm);
+                    const ingredientMatch = recipe.extendedIngredients && 
+                        recipe.extendedIngredients.some(ing => 
+                            (ing.name && ing.name.toLowerCase().includes(searchTerm)) || 
+                            (ing.original && ing.original.toLowerCase().includes(searchTerm))
+                        );
+                    return titleMatch || ingredientMatch;
+                });
+            filterRecipes();
+        }, 30); // Wait 30ms after last keypress before filtering
+    };
+
+    // Add input event listener for live search
+    searchInput.addEventListener('input', (e) => {
+        currentFilters.search = e.target.value;
+        performSearch();
     });
+
+    // Return filtered recipes
+    return !currentFilters.search ? recipes :
+        recipes.filter(recipe => {
+            const searchTerm = currentFilters.search.toLowerCase();
+            const titleMatch = recipe.title.toLowerCase().includes(searchTerm);
+            const ingredientMatch = recipe.extendedIngredients && 
+                recipe.extendedIngredients.some(ing => 
+                    (ing.name && ing.name.toLowerCase().includes(searchTerm)) || 
+                    (ing.original && ing.original.toLowerCase().includes(searchTerm))
+                );
+            return titleMatch || ingredientMatch;
+        });
+};
 
 const sortRecipes = (recipes) => {
     if (currentSort === 'none') return recipes;
