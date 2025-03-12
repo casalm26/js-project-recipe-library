@@ -14,7 +14,6 @@ const recipesPerPage = 5;
 // Current filters state
 const currentFilters = {
     dietary: [],
-    cuisine: [],
     time: [],
     ingredients: [],
     search: ''
@@ -26,7 +25,6 @@ const filterMessages = [];
 // DOM Elements
 const recipesContainer = document.getElementById('recipesContainer');
 const dietarySelect = document.querySelector('[data-filter-type="dietary"]');
-const cuisineSelect = document.querySelector('[data-filter-type="cuisine"]');
 const timeSelect = document.querySelector('[data-filter-type="time"]');
 const ingredientsSelect = document.querySelector('[data-filter-type="ingredients"]');
 const sortSelect = document.querySelector('[data-filter-type="sort"]');
@@ -135,7 +133,6 @@ document.addEventListener('click', (e) => {
 const createFilterMessage = (filterType, selectedItems) => {
     const filterNames = {
         dietary: 'dietary preferences',
-        cuisine: 'cuisines',
         time: 'cooking time',
         ingredients: 'number of ingredients',
         sort: 'sorting',
@@ -250,7 +247,6 @@ const createRecipeCard = (recipe) => {
             <a href="${recipe.sourceUrl || `#recipe-${recipe.id}`}" class="recipe-link" target="_blank">
                 <h3 class="recipe-title">${recipe.title}</h3>
                 <div class="recipe-info">
-                    <p>Cuisine: ${recipe.cuisines && recipe.cuisines.length ? recipe.cuisines.join(', ') : 'Various'}</p>
                     <p>Time: ${recipe.readyInMinutes || '?'} minutes</p>
                 </div>
                 <div class="recipe-ingredients">
@@ -287,7 +283,6 @@ const createCard = (className, innerHTML) => {
 const formatFilterDescription = (filters) => {
     const parts = [];
     if (filters.dietary.length) parts.push(`with dietary preferences: ${filters.dietary.join(', ')}`);
-    if (filters.cuisine.length) parts.push(`in cuisine: ${filters.cuisine.join(', ')}`);
     if (filters.time.length) parts.push(`within cooking time: ${filters.time.join(', ')} minutes`);
     if (filters.ingredients.length) parts.push(`with ingredient count: ${filters.ingredients.join(', ')}`);
     if (filters.search) parts.push(`matching search: "${filters.search}"`);
@@ -302,17 +297,6 @@ const dietaryFilter = (recipes) =>
             // Check if recipe has matching diet property
             (recipe.diets && recipe.diets.some(d => 
                 d.toLowerCase() === diet.toLowerCase())
-            )
-        )
-    );
-
-const cuisineFilter = (recipes) =>
-    !currentFilters.cuisine.length ? recipes :
-    recipes.filter(recipe => 
-        currentFilters.cuisine.some(cuisine => 
-            // Check if recipe has matching cuisine
-            (recipe.cuisines && recipe.cuisines.some(c => 
-                c.toLowerCase() === cuisine.toLowerCase())
             )
         )
     );
@@ -363,7 +347,7 @@ const searchFilter = (recipes) => {
                     return titleMatch || ingredientMatch;
                 });
             filterRecipes();
-        }, 30); // Wait 30ms after last keypress before filtering
+        }, 30);
     };
 
     // Add input event listener for live search
@@ -407,7 +391,6 @@ const filterRecipes = (showFavorites = false) => {
     
     let filteredRecipes = showFavorites ? favorites : recipes;
     filteredRecipes = dietaryFilter(filteredRecipes);
-    filteredRecipes = cuisineFilter(filteredRecipes);
     filteredRecipes = timeFilter(filteredRecipes);
     filteredRecipes = ingredientsFilter(filteredRecipes);
     filteredRecipes = searchFilter(filteredRecipes);
@@ -454,8 +437,8 @@ const addFilterMessage = (filterType, selectedItems) => {
     const message = createFilterMessage(filterType, selectedItems);
     filterMessages.unshift(message); // Add to the beginning
     
-    // Keep only the last 10 messages
-    if (filterMessages.length > 10) {
+    // Keep only the last 5 messages
+    if (filterMessages.length > 5) {
         filterMessages.pop();
     }
 };
@@ -505,7 +488,6 @@ const handleRandomRecipe = () => {
         const randomRecipe = recipes[Math.floor(Math.random() * recipes.length)];
         currentFilters = {
             dietary: [],
-            cuisine: [],
             time: [],
             ingredients: [],
             search: ''
@@ -636,8 +618,7 @@ const fetchRecipes = async (isInitial = true) => {
                 </div>
             `;
         } else {
-            recipesContainer.innerHTML = `
-                <div class="recipe-card no-results-card">
+            recipesContainer.innerHTML = `                <div class="recipe-card no-results-card">
                     <div class="recipe-content">
                         <div class="no-results-content">
                             <h3>Error Loading Recipes</h3>
