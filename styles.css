@@ -9,12 +9,16 @@
 body {
     background-color: #f5f5f5;
     padding: clamp(0.75rem, 2vw, 2rem);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
+    flex: 1;
 }
 
 /* Header Section */
@@ -194,6 +198,7 @@ h1 {
     grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
     min-height: 200px;
+    margin-bottom: 2rem;
 }
 
 /* Recipe Cards */
@@ -367,6 +372,13 @@ h1 {
     padding: 1rem;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.search-container:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 24, 164, 0.15);
 }
 
 .search-input {
@@ -380,6 +392,7 @@ h1 {
     color: #0018A4;
     transition: all 0.2s ease;
     font-weight: 500;
+    background-color: white;
 }
 
 .search-input::placeholder {
@@ -407,14 +420,17 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 50%;
 }
 
 .search-btn:hover {
     transform: translateY(-50%) scale(1.1);
+    background-color: rgba(0, 24, 164, 0.1);
 }
 
 .search-btn:active {
     transform: translateY(-50%) scale(1);
+    background-color: rgba(0, 24, 164, 0.2);
 }
 
 .search-btn svg {
@@ -453,8 +469,8 @@ h1 {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.9);
-    border: none;
+    background-color: #CCFFE2;
+    border: 2px solid #0018A4;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -464,17 +480,23 @@ h1 {
 }
 
 .favorite-btn svg {
-    fill: var(--color-text-light);
+    fill: #0018A4;
     transition: all 0.2s ease;
+    width: 20px;
+    height: 20px;
+}
+
+.favorite-btn:hover {
+    background-color: #0018A4;
 }
 
 .favorite-btn:hover svg,
 .favorite-btn.is-favorite svg {
-    fill: var(--color-hot-pink);
+    fill: white;
 }
 
 .favorite-btn.is-favorite {
-    background-color: rgba(255, 101, 137, 0.1);
+    background-color: #0018A4;
 }
 
 /* Loading spinner */
@@ -670,4 +692,118 @@ h1 {
         margin: 0;
         white-space: nowrap;
     }
+}
+
+/* Pagination */
+.pagination-container {
+    grid-column: 1 / -1;
+    margin: 2rem auto 3rem;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-btn {
+    background-color: #CCFFE2;
+    color: #0018A4;
+    border: 2px solid #0018A4;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not([disabled]) {
+    background-color: #0018A4;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.pagination-btn:active:not([disabled]) {
+    transform: translateY(0);
+}
+
+.pagination-btn[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.page-numbers {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.page-number {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    background-color: transparent;
+    color: #333;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.page-number:hover {
+    border-color: #CCFFE2;
+    background-color: #CCFFE2;
+}
+
+.page-number.active {
+    background-color: #0018A4;
+    color: white;
+    border-color: #0018A4;
+}
+
+.page-ellipsis {
+    padding: 0 0.25rem;
+    color: #666;
+}
+
+/* Media queries for pagination */
+@media (max-width: 480px) {
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .page-numbers {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+}
+
+/* Footer Styles */
+.footer {
+    margin-top: 4rem;
+    padding: 2rem 0;
+    background-color: #0018A4;
+    color: white;
+}
+
+.footer-content {
+    text-align: center;
+    padding: 0 1rem;
+}
+
+.footer-content p {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
 }

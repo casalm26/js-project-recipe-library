@@ -1,15 +1,17 @@
 // API configuration
 const API_KEY = 'ae9a7ed28b524302b564a7e680a506ef'; // Replace with your actual Spoonacular API key
 const API_URL = 'https://api.spoonacular.com/recipes/random';
-const NUMBER_OF_RECIPES = 10; // Number of recipes to fetch
+const NUMBER_OF_RECIPES = 30; // Increased number of recipes to fetch
 const CACHE_EXPIRY = 60 * 60 * 1000; // Cache expiry time: 1 hour in milliseconds
 
 // Store fetched recipes
 let recipes = [];
 let favorites = [];
 let isLoading = false;
-let page = 0;
-const recipesPerPage = 5;
+
+// Pagination variables
+let currentPage = 1;
+const recipesPerPage = 10; // Show 10 recipes per page
 
 // Current filters state
 const currentFilters = {
@@ -237,7 +239,7 @@ const createRecipeCard = (recipe) => {
             <div style="position: relative;">
                 ${recipe.image ? `
                     <img src="${recipe.image}" alt="${recipe.title}" style="width:100%; border-radius:8px; margin-bottom:12px;">
-                    <button class="favorite-btn ${isFavorite ? 'is-favorite' : ''}" data-id="${recipe.id}" style="position: absolute; top: 8px; left: 8px;">
+                    <button class="favorite-btn ${isFavorite ? 'is-favorite' : ''}" data-id="${recipe.id}" style="position: absolute; top: 8px; right: 8px;">
                         <svg viewBox="0 0 24 24" width="24" height="24">
                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                         </svg>
@@ -417,20 +419,104 @@ const renderRecipes = (recipesToRender, isRandomRecipe = false, showingFavorites
         return;
     }
     
-    recipesToRender.forEach(recipe => {
+    // Calculate pagination
+    const totalPages = Math.ceil(recipesToRender.length / recipesPerPage);
+    const startIndex = (currentPage - 1) * recipesPerPage;
+    const endIndex = Math.min(startIndex + recipesPerPage, recipesToRender.length);
+    
+    // Render only the recipes for the current page
+    const recipesForCurrentPage = recipesToRender.slice(startIndex, endIndex);
+    
+    recipesForCurrentPage.forEach(recipe => {
         recipesContainer.appendChild(createRecipeCard(recipe));
     });
 
-    // Add load more button if not showing favorites and there are more recipes to load
-    if (!showingFavorites && !isRandomRecipe && recipes.length > 0) {
-        const loadMoreBtn = document.createElement('button');
-        loadMoreBtn.className = 'load-more-btn';
-        loadMoreBtn.textContent = 'Load More Recipes';
-        loadMoreBtn.addEventListener('click', () => {
-            fetchMoreRecipes();
+    // Add pagination controls
+    if (totalPages > 1) {
+        const paginationContainer = document.createElement('div');
+        paginationContainer.className = 'pagination-container';
+        
+        // Create pagination controls
+        const paginationHtml = `
+            <div class="pagination">
+                <button class="pagination-btn prev-btn" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
+                <div class="page-numbers">
+                    ${createPageNumbers(currentPage, totalPages)}
+                </div>
+                <button class="pagination-btn next-btn" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
+            </div>
+        `;
+        
+        paginationContainer.innerHTML = paginationHtml;
+        recipesContainer.appendChild(paginationContainer);
+        
+        // Add event listeners to pagination buttons
+        const prevBtn = paginationContainer.querySelector('.prev-btn');
+        const nextBtn = paginationContainer.querySelector('.next-btn');
+        const pageButtons = paginationContainer.querySelectorAll('.page-number');
+        
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderRecipes(recipesToRender, isRandomRecipe, showingFavorites);
+                window.scrollTo(0, 0);
+            }
         });
-        recipesContainer.appendChild(loadMoreBtn);
+        
+        nextBtn.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderRecipes(recipesToRender, isRandomRecipe, showingFavorites);
+                window.scrollTo(0, 0);
+            }
+        });
+        
+        pageButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                currentPage = parseInt(button.dataset.page);
+                renderRecipes(recipesToRender, isRandomRecipe, showingFavorites);
+                window.scrollTo(0, 0);
+            });
+        });
     }
+};
+
+// Helper function to create page number buttons
+const createPageNumbers = (currentPage, totalPages) => {
+    let pageNumbers = '';
+    const maxVisiblePages = 5;
+    
+    // Calculate range of page numbers to show
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    // Adjust if we're near the end
+    if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    // Add first page button if not included in range
+    if (startPage > 1) {
+        pageNumbers += `<button class="page-number" data-page="1">1</button>`;
+        if (startPage > 2) {
+            pageNumbers += `<span class="page-ellipsis">...</span>`;
+        }
+    }
+    
+    // Add page numbers
+    for (let i = startPage; i <= endPage; i++) {
+        pageNumbers += `<button class="page-number ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+    }
+    
+    // Add last page button if not included in range
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            pageNumbers += `<span class="page-ellipsis">...</span>`;
+        }
+        pageNumbers += `<button class="page-number" data-page="${totalPages}">${totalPages}</button>`;
+    }
+    
+    return pageNumbers;
 };
 
 const addFilterMessage = (filterType, selectedItems) => {
@@ -476,6 +562,9 @@ const clearAllFilters = () => {
     // Reset UI
     resetUIState();
     
+    // Reset pagination
+    currentPage = 1;
+    
     // Add message
     addFilterMessage('clear', ['all filters']);
     
@@ -493,6 +582,7 @@ const handleRandomRecipe = () => {
             search: ''
         };
         currentSort = 'none';
+        currentPage = 1;
         resetUIState();
         addFilterMessage('random', [randomRecipe.title]);
         renderRecipes([randomRecipe], true);
@@ -631,14 +721,13 @@ const fetchRecipes = async (isInitial = true) => {
     }
 };
 
-const fetchMoreRecipes = () => {
-    fetchRecipes(false);
-};
-
 // Search function
 const handleSearch = () => {
     const searchTerm = searchInput.value.trim();
     currentFilters.search = searchTerm;
+    
+    // Reset pagination
+    currentPage = 1;
     
     if (searchTerm) {
         addFilterMessage('search', [searchTerm]);
@@ -653,6 +742,9 @@ const handleSearch = () => {
 // View favorites function
 const toggleFavoritesView = () => {
     favoritesBtn.classList.toggle('active');
+    
+    // Reset pagination
+    currentPage = 1;
     
     if (favoritesBtn.classList.contains('active')) {
         favoritesBtn.textContent = 'View All Recipes';
@@ -675,16 +767,6 @@ searchInput.addEventListener('keypress', (e) => {
     }
 });
 favoritesBtn.addEventListener('click', toggleFavoritesView);
-
-// Implement infinite scroll
-window.addEventListener('scroll', () => {
-    if (!isLoading && !favoritesBtn.classList.contains('active')) {
-        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-        if (scrollTop + clientHeight >= scrollHeight - 200) {
-            fetchMoreRecipes();
-        }
-    }
-});
 
 // Close dropdowns when clicking escape
 document.addEventListener('keydown', (e) => {
