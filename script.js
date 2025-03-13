@@ -154,9 +154,23 @@ class RecipeManager {
             .map(cb => cb.parentNode.textContent.trim());
         
         const buttonText = select.querySelector('.selected-value');
-        buttonText.textContent = selectedValues.length ? 
-            `${selectedValues.length} selected` : 
-            buttonText.dataset.default || buttonText.textContent;
+        const defaultText = buttonText.dataset.default || buttonText.textContent;
+        
+        // Update button text and class based on selection
+        if (selectedValues.length > 0) {
+            buttonText.textContent = `${selectedValues.length} selected`;
+            select.classList.add('has-active-filters');
+        } else {
+            // Use the original filter title when no options are selected
+            const filterType = select.dataset.filterType;
+            const filterTitles = {
+                dietary: 'Dietary Preferences',
+                time: 'Cooking Time',
+                ingredients: 'Number of Ingredients'
+            };
+            buttonText.textContent = filterTitles[filterType] || defaultText;
+            select.classList.remove('has-active-filters');
+        }
         
         this.addFilterMessage(select.dataset.filterType, selectedValues);
     }
