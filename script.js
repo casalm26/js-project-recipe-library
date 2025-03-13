@@ -219,7 +219,10 @@ class RecipeManager {
         }
 
         if (filterType === 'favorites') {
-            return `Viewing favorite recipes`;
+            // Check the actual state of the favorites button
+            return this.elements.favoritesBtn.classList.contains('active') 
+                ? 'Viewing favorite recipes'
+                : 'Viewing all recipes';
         }
         
         return selectedItems.length === 0
@@ -816,10 +819,10 @@ class RecipeManager {
         
         if (this.elements.favoritesBtn.classList.contains('active')) {
             this.elements.favoritesBtn.textContent = 'View All Recipes';
-            this.addFilterMessage('favorites', []);
+            this.addFilterMessage('favorites', ['Viewing favorite recipes']);
         } else {
             this.elements.favoritesBtn.textContent = 'View Favorites';
-            this.addFilterMessage('favorites', ['Showing all recipes']);
+            this.addFilterMessage('favorites', ['Viewing all recipes']);
         }
         
         // Apply current filters to either favorites or all recipes
