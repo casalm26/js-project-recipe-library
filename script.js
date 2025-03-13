@@ -431,18 +431,27 @@ class RecipeManager {
     }
 
     // Main functions
-    filterRecipes(showFavorites = false) {
-        if (this.recipes.length === 0 && !showFavorites) {
+    filterRecipes() {
+        const showingFavorites = this.elements.favoritesBtn.classList.contains('active');
+        
+        if (this.recipes.length === 0 && !showingFavorites) {
             return; // No recipes to filter yet
         }
         
-        let filteredRecipes = showFavorites ? this.favorites : this.recipes;
+        // Start with either favorites or all recipes depending on view
+        let filteredRecipes = showingFavorites ? this.favorites : this.recipes;
+        
+        // Apply all filters
         filteredRecipes = this.dietaryFilter(filteredRecipes);
         filteredRecipes = this.timeFilter(filteredRecipes);
         filteredRecipes = this.ingredientsFilter(filteredRecipes);
         filteredRecipes = this.searchFilter(filteredRecipes);
         
-        this.renderRecipes(this.sortRecipes(filteredRecipes), false, showFavorites);
+        // Sort the filtered results
+        filteredRecipes = this.sortRecipes(filteredRecipes);
+        
+        // Render with the current view state
+        this.renderRecipes(filteredRecipes, false, showingFavorites);
     }
 
     renderRecipes(recipesToRender, isRandomRecipe = false, showingFavorites = false) {
@@ -613,7 +622,7 @@ class RecipeManager {
         // Add message
         this.addFilterMessage('clear', ['all filters']);
         
-        // Re-filter recipes
+        // Re-filter recipes while maintaining favorites view
         this.filterRecipes();
     }
 
@@ -683,7 +692,7 @@ class RecipeManager {
             
             // If we're currently viewing favorites, update the view
             if (this.elements.favoritesBtn.classList.contains('active')) {
-                this.filterRecipes(true);
+                this.filterRecipes();
             }
         }
         
@@ -778,7 +787,6 @@ class RecipeManager {
         if (searchTerm) {
             this.addFilterMessage('search', [searchTerm]);
         } else {
-            // If search is cleared, add a message
             this.addFilterMessage('search', ['']);
         }
         
@@ -795,12 +803,13 @@ class RecipeManager {
         if (this.elements.favoritesBtn.classList.contains('active')) {
             this.elements.favoritesBtn.textContent = 'View All Recipes';
             this.addFilterMessage('favorites', []);
-            this.filterRecipes(true);
         } else {
             this.elements.favoritesBtn.textContent = 'View Favorites';
             this.addFilterMessage('favorites', ['Showing all recipes']);
-            this.filterRecipes(false);
         }
+        
+        // Apply current filters to either favorites or all recipes
+        this.filterRecipes();
     }
 }
 
