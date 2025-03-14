@@ -2,7 +2,7 @@
 const API_CONFIG = {
     key: 'ae9a7ed28b524302b564a7e680a506ef',
     url: 'https://api.spoonacular.com/recipes/random',
-    recipesPerFetch: 30,
+    recipesPerFetch: 100,
     cacheExpiry: 60 * 60 * 1000 // 1 hour in milliseconds
 };
 
